@@ -164,7 +164,7 @@ You can also use these abbreviations with the `-x` command-line option.
 
 === Tracing name expansion
 
-For complex projects, it might not be obvious if the correct tasks were executed. When using abbreviated names, a single typo can lead to the execution of different tasks.
+For complex projects, it might not be obvious if the intended tasks were executed. When using abbreviated names, a single typo can lead to the execution of unexpected tasks.
 
 When INFO, or <<logging.adoc#logLevels, more verbose logging is enabled>>, the output will contain extra information about the project and task name expansion. For example, when executing the `mAL:cT` command on the previous example, the following log messages will be visible:
 

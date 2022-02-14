@@ -29,34 +29,6 @@ public class ProjectFinderByTaskPath {
     private static final Logger LOGGER = Logging.getLogger(ProjectFinderByTaskPath.class);
 
     /**
-     * Tries to resolve {@code projectName} inside {@code parentProjectMatch}.
-     * <p>
-     * This method tries to look for exact, and if not found, abbreviated projects
-     * inside the {@code parentProjectMatch}.
-     *
-     * @param projectName an exact or abbreviated project name
-     * @param parentProjectMatch the parent's project match
-     * @return a new match with the looked up project
-     * @throws ProjectLookupException if the project cannot be found in the parent project
-     */
-    private MatchedProject resolveProject(String projectName, MatchedProject parentProjectMatch) throws ProjectLookupException {
-        Project parentProject = parentProjectMatch.getProject();
-        Map<String, Project> childProjects = parentProject.getChildProjects();
-
-        if (childProjects.containsKey(projectName)) {
-            return new MatchedProject(childProjects.get(projectName), parentProjectMatch.isPatternMatched());
-        } else {
-            NameMatcher matcher = new NameMatcher();
-            Project foundProject = matcher.find(projectName, childProjects);
-            if (foundProject != null) {
-                return new MatchedProject(foundProject, true);
-            } else {
-                throw new ProjectLookupException(matcher.formatErrorMessage("project", parentProject));
-            }
-        }
-    }
-
-    /**
      * Resolves a project defined by {@code projectPath}.
      * <p>
      * Depending on the path, resolution can be relative, or absolute:
@@ -105,6 +77,34 @@ public class ProjectFinderByTaskPath {
         return (ProjectInternal) matchedProject.getProject();
     }
 
+    /**
+     * Tries to resolve {@code projectName} inside {@code parentProjectMatch}.
+     * <p>
+     * This method tries to look for exact, and if not found, abbreviated projects
+     * inside the {@code parentProjectMatch}.
+     *
+     * @param projectName an exact or abbreviated project name
+     * @param parentProjectMatch the parent's project match
+     * @return a new match with the looked up project
+     * @throws ProjectLookupException if the project cannot be found in the parent project
+     */
+    private MatchedProject resolveProject(String projectName, MatchedProject parentProjectMatch) throws ProjectLookupException {
+        Project parentProject = parentProjectMatch.getProject();
+        Map<String, Project> childProjects = parentProject.getChildProjects();
+
+        if (childProjects.containsKey(projectName)) {
+            return new MatchedProject(childProjects.get(projectName), parentProjectMatch.isPatternMatched());
+        } else {
+            NameMatcher matcher = new NameMatcher();
+            Project foundProject = matcher.find(projectName, childProjects);
+            if (foundProject != null) {
+                return new MatchedProject(foundProject, true);
+            } else {
+                throw new ProjectLookupException(matcher.formatErrorMessage("project", parentProject));
+            }
+        }
+    }
+
     public static class ProjectLookupException extends InvalidUserDataException {
         public ProjectLookupException(String message) {
             super(message);
@@ -115,14 +115,7 @@ public class ProjectFinderByTaskPath {
      * Utility class storing information about a project resolution.
      */
     private static class MatchedProject {
-        /**
-         * The currently resolved project
-         */
         private final Project project;
-
-        /**
-         * Marks if in the chain of resolutions, pattern matching was necessary
-         */
         private final boolean patternMatched;
 
         public MatchedProject(Project project, boolean patternMatched) {
@@ -130,10 +123,16 @@ public class ProjectFinderByTaskPath {
             this.patternMatched = patternMatched;
         }
 
+        /**
+         * The currently resolved project
+         */
         public Project getProject() {
             return project;
         }
 
+        /**
+         * Marks if in the chain of resolutions, pattern matching was necessary
+         */
         public boolean isPatternMatched() {
             return patternMatched;
         }

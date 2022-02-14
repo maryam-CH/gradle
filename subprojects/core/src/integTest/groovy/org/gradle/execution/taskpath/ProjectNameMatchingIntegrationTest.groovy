@@ -40,26 +40,26 @@ class ProjectNameMatchingIntegrationTest extends AbstractIntegrationSpec {
         """.stripIndent()
     }
 
-    def "logs info message for exact project name match"() {
+    def "logs info message for exact project name match [#desc]"() {
         when:
         run("$projectPath:help", "--info")
 
         then:
         outputContains("Found exact project with name '$expectedPath'")
-        outputDoesNotContain("abbrevation")
+        outputDoesNotContain("abbreviated")
 
         where:
-        projectPath                           | expectedPath
-        ""                                    | ":"                      // Global root
-        ":"                                   | ":"
-        ":projectA"                           | ":projectA"              // Subprojects
-        ":projectA:projectSubA"               | ":projectA:projectSubA"
-        ":includedBuild"                      | ":"                      // Included build projects
-        ":includedBuild:projectI"             | ":projectI"
-        ":includedBuild:projectI:projectSubI" | ":projectI:projectSubI"
+        desc                                    | projectPath                           | expectedPath
+        "root (no colon)"                       | ""                                    | ":"                      // Global root
+        "root (with colon)"                     | ":"                                   | ":"
+        "projectA"                              | ":projectA"                           | ":projectA"              // Subprojects
+        "projectA/projectSubA"                  | ":projectA:projectSubA"               | ":projectA:projectSubA"
+        "included build - included root"        | ":includedBuild"                      | ":"                      // Included build projects
+        "included build - projectI"             | ":includedBuild:projectI"             | ":projectI"
+        "included build - projectI/projectSubI" | ":includedBuild:projectI:projectSubI" | ":projectI:projectSubI"
     }
 
-    def "logs info message for project name pattern match"() {
+    def "logs info message for project name pattern match [#desc]"() {
         when:
         run("$projectPath:help", "--info")
 
@@ -75,12 +75,12 @@ class ProjectNameMatchingIntegrationTest extends AbstractIntegrationSpec {
         outputContains("Found exactly one project that matches the abbreviated name ‘$projectPath’: '$expectedProjectPath'.")
 
         where:
-        projectPath | expectedProjectPath
-        ":pA"                         | ":projectA"             // Subprojects
-        ":pA:projectSubA"             | ":projectA:projectSubA"
-        ":projectA:pSA"               | ":projectA:projectSubA"
-        ":includedBuild:pI"           | ":projectI"             // Included build projects
-        ":includedBuild:projectI:pSI" | ":projectI:projectSubI"
+        desc                                    | projectPath                   | expectedProjectPath
+        "projectA"                              | ":pA"                         | ":projectA"             // Subprojects
+        "projectA/projectSubA"                  | ":pA:projectSubA"             | ":projectA:projectSubA"
+        "projectA/projectSubA"                  | ":projectA:pSA"               | ":projectA:projectSubA"
+        "included build - projectI"             | ":includedBuild:pI"           | ":projectI"             // Included build projects
+        "included build - projectI/projectSubI" | ":includedBuild:projectI:pSI" | ":projectI:projectSubI"
     }
 
 }

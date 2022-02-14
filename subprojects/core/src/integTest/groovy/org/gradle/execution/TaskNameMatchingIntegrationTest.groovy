@@ -36,7 +36,7 @@ class TaskNameMatchingIntegrationTest extends AbstractIntegrationSpec {
 
         then:
         outputContains("Found exact task with name 'sanityCheck'")
-        outputDoesNotContain("abbrevation")
+        outputDoesNotContain("abbreviated")
         result.assertTaskExecuted(":sanityCheck")
         result.assertTaskNotExecuted(":safetyCheck")
     }

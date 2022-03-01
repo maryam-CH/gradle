@@ -27,7 +27,6 @@ import org.gradle.initialization.GradleUserHomeDirProvider
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.internal.Resources
 import org.junit.Rule
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -130,7 +129,6 @@ class JdkCacheDirectoryTest extends Specification {
         new File(installedJdk, "file").exists()
     }
 
-    @Ignore
     def "provisions jdk from tar.gz archive with MacOS symlinks"() {
         def jdkArchive = resources.getResource("jdk-with-symlinks.tar.gz")
         def jdkCacheDirectory = new JdkCacheDirectory(newHomeDirProvider(), TestFiles.fileOperations(temporaryFolder, tmpFileProvider()), mockLockManager())
@@ -140,28 +138,7 @@ class JdkCacheDirectoryTest extends Specification {
 
         then:
         installedJdk.exists()
-        new File(installedJdk, "jdk-with-symlinks/bin/file").exists()
-
-        //todo: completely wrong; the uncompressed archive should look like this:
-        // .
-        // ├── bin -> zulu-11.jdk/Contents/Home/bin
-        // ├── file
-        // └── zulu-11.jdk
-        //     └── Contents
-        //         └── Home
-        //             └── bin
-        //                 └── file
-        // but actually looks like this:
-        // .
-        // ├── bin
-        // ├── file
-        // └── zulu-11.jdk
-        //     └── Contents
-        //         └── Home
-        //             └── bin
-        //                 └── file
-        // the symbolic link handling is AND HAS NOT BEEN WORKING
-        // the test has been passing because it checks the existence of zulu-11.jdk/Contents/Home/bin/file, which has nothing to do with the symbolic link
+        new File(installedJdk, "bin/file").exists()
     }
 
     private GradleUserHomeDirProvider newHomeDirProvider() {
